@@ -8,7 +8,7 @@
   var COMPARISON = window.QUIZ_COMPARISON;
   var SECTIONS = window.QUIZ_SECTIONS;
 
-  var PHOTOS = ['img/pm1.jpg', 'img/pm2.jpg', 'img/pm3.jpg', 'img/pm4.jpg', 'img/pm5.jpg', 'img/pm6.jpg'];
+  var PHOTOS = ['img/pm1.webp', 'img/pm2.webp', 'img/pm3.webp', 'img/pm4.webp', 'img/pm5.webp', 'img/pm6.webp'];
 
   var state = { index: -1, answers: {}, sent: false };
 
@@ -172,7 +172,7 @@
 
     var opts = INTRO.options.map(function (o) {
       return '<button class="opt tile" data-v="' + o.value + '">' +
-        '<img src="' + o.image + '" alt="' + esc(o.label) + '">' +
+        '<span class="shot"><img src="' + o.image + '" alt="' + esc(o.label) + '"></span>' +
         '<span class="bar"><span class="txt">' + esc(o.label) + '</span>' +
         '<span class="go">' + ARROW + '</span></span></button>';
     }).join('');
@@ -294,8 +294,8 @@
     var quote = step.quote ? '<div class="quote"><p class="who">' + esc(step.quote.author) + '</p>' +
       '<p class="txt">' + esc(step.quote.text) + '</p></div>' : '';
 
-    var v = el('<div class="content"><h1>' + esc(step.title) + '</h1>' +
-      figure(step) + paras + quote + '</div>');
+    var v = el('<div class="content">' + figure(step, true) +
+      '<h1>' + esc(step.title) + '</h1>' + paras + quote + '</div>');
 
     setCta('Continuar', next);
     return v;

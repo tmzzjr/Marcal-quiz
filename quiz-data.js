@@ -4,8 +4,8 @@ window.QUIZ_INTRO = {
   sub: 'Faça o teste de 2 minutos, descubra quais dos **7 CICLOS** estão te prendendo e receba o plano exato pra quebrar cada ciclo.',
   genderQuestion: 'Para começar: você é...',
   options: [
-    { value: 'homem', label: 'Homem', image: 'img/homem.webp' },
-    { value: 'mulher', label: 'Mulher', image: 'img/mulher.webp' },
+    { value: 'homem', label: 'Homem', image: 'img/homem-cut.webp' },
+    { value: 'mulher', label: 'Mulher', image: 'img/mulher-cut.webp' },
   ],
 };
 
