@@ -172,14 +172,15 @@
     if (!isQuestion) { headCenter.replaceChildren(el(LOGO)); return; }
 
     var pr = sectionProgress(step);
-    var mid = Math.floor(SECTIONS.length / 2);
+    var mid = Math.ceil(SECTIONS.length / 2) - 1; // entra entre os dois segmentos centrais
     var segs = SECTIONS.map(function (_, i) {
       var w = i < pr.section ? 100 : (i === pr.section ? pr.pct : 0);
       var gift = i === mid ? '<em class="gift amarelo' + (pr.section > mid ? ' won' : '') + '">' + GIFT + '</em>' : '';
       return '<i><b style="width:' + w + '%"></b></i>' + gift;
     }).join('') + '<em class="gift roxo' + (pr.section === SECTIONS.length - 1 ? ' won' : '') + '">' + GIFT + '</em>';
+    // espaçador à esquerda com a largura do prêmio final, pra centralizar o do meio de verdade
     headCenter.replaceChildren(el(
-      '<div>' + LOGO + '<div class="segments">' + segs + '</div></div>'
+      '<div>' + LOGO + '<div class="segments"><em class="gift ghost"></em>' + segs + '</div></div>'
     ));
   }
 
