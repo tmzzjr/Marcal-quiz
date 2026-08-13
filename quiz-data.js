@@ -237,6 +237,16 @@ window.QUIZ_STEPS = [
   { id: 'captura_lead', type: 'lead' },
 ];
 
+// Seções (progresso segmentado no topo, como no BetterMe)
+window.QUIZ_SECTIONS = [
+  { label: 'Meu perfil', start: 'idade' },
+  { label: 'Meu ciclo', start: 'frequencia_dor' },
+  { label: 'Meu caminho', start: 'preferencia_caminho' },
+  { label: 'Crenças herdadas', start: 'escala_culpa' },
+  { label: 'Minha virada', start: 'recaidas' },
+  { label: 'Meu plano', start: 'compromisso_1' },
+];
+
 // Níveis do Índice de Ruptura (quanto maior a pontuação, mais preso ao ciclo)
 window.QUIZ_LEVELS = {
   4: { name: 'Preso Profundo', range: 'nível 1 de 4', tone: 'danger', bar: 15,

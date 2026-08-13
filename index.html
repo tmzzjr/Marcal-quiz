@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Quebrando Ciclos — Qual seu Índice de Ruptura?</title>
 <meta name="description" content="Descubra em minutos quais ciclos herdados estão te impedindo de prosperar, e receba seu plano personalizado para quebrá-los.">
+<meta name="theme-color" content="#050300">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="preload" as="image" href="img/homem.webp">
 <link rel="preload" as="image" href="img/mulher.webp">
@@ -17,15 +18,18 @@
 <header class="topbar" id="topbar" hidden>
   <div class="topbar-inner">
     <button class="iconbtn" id="back" aria-label="Voltar">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.414 10.657L3.071 11 2 12.071l1.414 1.414 6.364 6.364a1 1 0 101.414-1.414L5.757 13h14.314a1 1 0 100-2H5.9l5.293-5.293a1 1 0 00-1.414-1.414l-6.364 6.364z"/></svg>
     </button>
-    <img class="topbar-logo" src="img/logo.webp" alt="Quebrando Ciclos">
-    <div class="stepcount" id="counter"></div>
+    <div class="head-center" id="head-center"></div>
+    <button class="iconbtn" id="menu" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+    </button>
   </div>
-  <div class="progress"><i id="bar"></i></div>
 </header>
 
 <main id="app"></main>
+
+<div class="ctabar" id="ctabar" hidden><div></div></div>
 
 <script src="quiz-data.js"></script>
 <script src="app.js"></script>
