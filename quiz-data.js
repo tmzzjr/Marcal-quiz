@@ -1,7 +1,7 @@
 // Perguntas transcritas do quiz original (v2.quizpablomarcal.com.br)
 window.QUIZ_INTRO = {
   headline: 'NÃO É AZAR. É UM CICLO. E TODO CICLO PODE SER QUEBRADO.',
-  sub: 'Faça o teste de 2 minutos, descubra quais dos **7 CICLOS** estão te prendendo e receba o plano exato pra quebrar cada ciclo.',
+  sub: 'Faça o teste de 5 minutos, descubra quais dos **7 CICLOS** estão te prendendo e receba o plano exato pra quebrar cada ciclo.',
   genderQuestion: 'Para começar: você é...',
   options: [
     { value: 'homem', label: 'Homem', image: 'img/homem-cut.webp' },
