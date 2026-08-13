@@ -159,7 +159,8 @@ p.q-sub { margin: -14px 0 22px; text-align: center; color: var(--content-2); fon
   mask-composite: intersect;
 }
 .figure.tall { height: 38vh; max-height: 340px; }
-.figure.full { height: 40vh; max-height: 360px; }
+/* corpo inteiro: sobe a figura e encosta mais no título, que é o que o passo pede */
+.figure.full { height: 40vh; max-height: 360px; margin-bottom: -22px; }
 .figure.full img { max-width: 100%; }
 .figure.tall.full { height: 46vh; max-height: 420px; }
 
@@ -205,9 +206,9 @@ p.q-sub { margin: -14px 0 22px; text-align: center; color: var(--content-2); fon
   display: grid; place-items: end center; overflow: hidden;
 }
 .opt.tile .shot img {
-  height: 106%; width: auto; max-width: 100%;
+  height: 118%; width: auto; max-width: 100%;
   object-fit: contain; object-position: bottom center;
-  margin-bottom: -6%;
+  margin-bottom: -18%;
 }
 .opt.tile .bar {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -248,6 +249,54 @@ p.q-sub { margin: -14px 0 22px; text-align: center; color: var(--content-2); fon
   padding: 14px 20px max(14px, env(safe-area-inset-bottom));
 }
 .ctabar > div { max-width: var(--max); margin: 0 auto; }
+
+/* faixa fixa: o resultado vai ser refeito */
+.recalc {
+  position: sticky; top: 56px; z-index: 24;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 9px 14px;
+  font-size: 13px; font-weight: 600;
+  color: #9fe3cd;
+  background: rgba(58, 174, 146, .12);
+  border-bottom: 1px solid rgba(58, 174, 146, .3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  animation: fade .3s ease;
+}
+.recalc .spin {
+  flex: none; width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid rgba(58, 174, 146, .3);
+  border-top-color: var(--positive);
+  animation: spin .7s linear infinite;
+}
+
+/* aviso curto acima do botão */
+.toast {
+  position: absolute;
+  left: 50%; bottom: calc(100% - 10px);
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 9px;
+  white-space: nowrap;
+  padding: 10px 16px 10px 13px;
+  border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
+  color: var(--content);
+  background: rgba(32, 30, 25, .82);
+  border: 1px solid rgba(235, 225, 211, .16);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  animation: toastUp .32s cubic-bezier(.22, 1.2, .4, 1);
+}
+.toast .spin {
+  flex: none; width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid rgba(58, 174, 146, .28);
+  border-top-color: var(--positive);
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes toastUp { from { opacity: 0; transform: translate(-50%, 8px); } }
+@media (prefers-reduced-motion: reduce) { .toast .spin { animation-duration: 2s; } }
 
 /* ---------- intro ---------- */
 .intro { text-align: center; }

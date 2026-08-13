@@ -184,7 +184,11 @@
     window.scrollTo(0, 0);
   }
   function next() { go(state.index + 1); }
-  function prev() { go(state.index - 1); }
+  function prev() {
+    // sair do diagnóstico para trás significa que o resultado terá de ser refeito
+    if (STEPS[state.index] && STEPS[state.index].type === 'diagnosis') state.recalcular = true;
+    go(state.index - 1);
+  }
   function answer(id, value) { state.answers[id] = value; save(); }
 
   function setCta(label, onClick, disabled) {
@@ -225,6 +229,9 @@
     var step = STEPS[state.index];
     header(step);
     setCta(null);
+
+    if (step.type === 'diagnosis') clearRecalc();
+    else if (state.recalcular) recalcBanner();
 
     var view;
     switch (step.type) {
@@ -459,7 +466,7 @@
       '<p class="peers">Comparado com <b>5.841</b> pessoas que já mapearam seus ciclos.</p>' +
     '</div>');
 
-    var cta = setCta('Analisando...', next, true);
+    var cta = setCta('Analisando...', redirectToast, true);
     var fill = v.querySelector('.fill');
     var num = v.querySelector('.dial-mid b');
     var t0 = Date.now(), dur = 1800, mine = state.index;
@@ -484,6 +491,28 @@
 
   function toneClass(t) {
     return t === 'danger' ? 'negative' : (t === 'warn' ? 'warning' : 'positive');
+  }
+
+  // aviso fixo abaixo do topo, enquanto o usuário refaz respostas depois de ver o resultado
+  function recalcBanner() {
+    if (document.querySelector('.recalc')) return;
+    var r = el('<div class="recalc" role="status" aria-live="polite">' +
+      '<span class="spin"></span><span>Recalculando novamente</span></div>');
+    topbar.insertAdjacentElement('afterend', r);
+  }
+
+  function clearRecalc() {
+    state.recalcular = false;
+    var r = document.querySelector('.recalc');
+    if (r) r.remove();
+  }
+
+  // o botão do resultado não navega: só avisa que o redirecionamento está a caminho
+  function redirectToast() {
+    if (document.querySelector('.toast')) return;
+    var t = el('<div class="toast" role="status" aria-live="polite">' +
+      '<span class="spin"></span><span>Redirecionando você para a página</span></div>');
+    ctabar.appendChild(t); // depois do wrapper, que setCta reaproveita
   }
 
   /* ---------- comparativo ---------- */
