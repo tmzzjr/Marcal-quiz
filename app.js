@@ -8,7 +8,8 @@
   var COMPARISON = window.QUIZ_COMPARISON;
   var SECTIONS = window.QUIZ_SECTIONS;
 
-  var PHOTOS = ['img/pm1.webp', 'img/pm2.webp', 'img/pm3.webp', 'img/pm4.webp', 'img/pm5.webp', 'img/pm6.webp'];
+  // pm6 (corpo inteiro) abre o quiz: é o único recorte sem corte reto de enquadramento
+  var PHOTOS = ['img/pm6.webp', 'img/pm2.webp', 'img/pm3.webp', 'img/pm4.webp', 'img/pm5.webp', 'img/pm1.webp'];
 
   var state = { index: -1, answers: {}, sent: false };
 
@@ -112,7 +113,7 @@
   }
 
   /* ---------- header ---------- */
-  var LOGO = '<img class="topbar-logo" src="img/logo.webp" alt="Quebrando Ciclos">';
+  var LOGO = '<p class="wordmark">QUEBRANDO CICLOS</p>';
 
   function header(step) {
     topbar.hidden = false;

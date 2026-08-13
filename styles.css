@@ -64,7 +64,15 @@ a { color: var(--link); }
 .iconbtn[hidden] { visibility: hidden; display: grid; }
 .head-center { text-align: center; }
 .head-label { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
-.topbar-logo { height: 30px; margin: 0 auto; border-radius: 7px; }
+.wordmark {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+}
 
 .segments { display: flex; gap: 5px; justify-content: center; margin-top: 7px; }
 .segments i {
