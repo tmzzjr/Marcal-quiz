@@ -263,6 +263,8 @@ p.q-sub { margin: -14px 0 22px; text-align: center; color: var(--content-2); fon
   backdrop-filter: blur(12px);
   animation: fade .3s ease;
 }
+.recalc.saindo { animation: recalcOut .28s ease forwards; }
+@keyframes recalcOut { to { opacity: 0; transform: translateY(-6px); } }
 .recalc .spin {
   flex: none; width: 13px; height: 13px; border-radius: 50%;
   border: 2px solid rgba(58, 174, 146, .3);

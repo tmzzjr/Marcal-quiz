@@ -223,7 +223,10 @@
   function prev() {
     // sair do diagnóstico para trás significa que o resultado terá de ser refeito
     if (STEPS[state.index] && STEPS[state.index].type === 'diagnosis') state.recalcular = true;
-    go(state.index - 1);
+    // voltar não pode cair numa tela de carregamento, que empurraria a pessoa para frente de novo
+    var i = state.index - 1;
+    while (i > 0 && STEPS[i].type === 'loading') i--;
+    go(i);
   }
   function answer(id, value) { state.answers[id] = value; save(); }
 
@@ -614,17 +617,24 @@
   }
 
   // aviso fixo abaixo do topo, enquanto o usuário refaz respostas depois de ver o resultado
+  var recalcTimer = null;
   function recalcBanner() {
     if (document.querySelector('.recalc')) return;
     var r = el('<div class="recalc" role="status" aria-live="polite">' +
       '<span class="spin"></span><span>Recalculando novamente</span></div>');
     topbar.insertAdjacentElement('afterend', r);
+    // some sozinha depois de 7s, mesmo que a pessoa siga respondendo
+    clearTimeout(recalcTimer);
+    recalcTimer = setTimeout(clearRecalc, 7000);
   }
 
   function clearRecalc() {
     state.recalcular = false;
+    clearTimeout(recalcTimer);
     var r = document.querySelector('.recalc');
-    if (r) r.remove();
+    if (!r) return;
+    r.classList.add('saindo');
+    setTimeout(function () { r.remove(); }, 280);
   }
 
   // o botão do resultado não navega: só avisa que o redirecionamento está a caminho
