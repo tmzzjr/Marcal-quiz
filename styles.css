@@ -288,6 +288,8 @@ p.q-sub { margin: -14px 0 22px; text-align: center; color: var(--content-2); fon
   box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
   animation: toastUp .32s cubic-bezier(.22, 1.2, .4, 1);
 }
+.toast.saindo { animation: toastOut .26s ease forwards; }
+@keyframes toastOut { to { opacity: 0; transform: translate(-50%, 6px); } }
 .toast .spin {
   flex: none; width: 15px; height: 15px; border-radius: 50%;
   border: 2px solid rgba(58, 174, 146, .28);
@@ -354,10 +356,51 @@ strong.hl { color: var(--content); font-weight: 800; }
   letter-spacing: .18em; text-transform: uppercase; color: var(--content-3); margin: 0;
 }
 
+/* faixa de áudio */
+.player {
+  --pos: 0%;
+  display: flex; align-items: center; gap: 13px;
+  margin: 20px 0 6px; padding: 12px 14px;
+  border-radius: 18px;
+  background: linear-gradient(158deg, rgba(235, 225, 211, .07), rgba(235, 225, 211, .02));
+  border: 1px solid rgba(235, 225, 211, .16);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+.play {
+  flex: none; width: 42px; height: 42px; border-radius: 50%;
+  border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  color: var(--content-inverse); background: var(--content);
+  transition: transform .12s ease;
+}
+.play:active { transform: scale(.94); }
+.play .ico-pause { display: none; }
+.player.tocando .play .ico-play { display: none; }
+.player.tocando .play .ico-pause { display: block; }
+
+.player-body { flex: 1; min-width: 0; }
+.wave {
+  display: flex; align-items: center; gap: 2px;
+  height: 30px; cursor: pointer;
+}
+.wave i {
+  flex: 1; min-width: 0; border-radius: 99px;
+  background: rgba(235, 225, 211, .26);
+  transition: background .18s ease;
+}
+.wave i.on { background: var(--positive); }
+.times {
+  display: flex; justify-content: space-between;
+  margin-top: 5px; font-size: 11px; font-weight: 600;
+  color: var(--content-3); font-variant-numeric: tabular-nums;
+}
+.player.tocando .t-now { color: var(--positive); }
+
 .dial { position: relative; margin: 14px 0 0; }
 .dial svg { display: block; overflow: visible; }
 .dial .track { stroke: rgba(235, 225, 211, .13); }
-.dial .fill { transition: stroke-dashoffset .1s linear; }
+.dial .fill { will-change: stroke-dashoffset; }
 .dial .fill.negative { stroke: var(--negative); }
 .dial .fill.warning { stroke: var(--warning); }
 .dial .fill.positive { stroke: var(--positive); }
@@ -398,7 +441,9 @@ strong.hl { color: var(--content); font-weight: 800; }
 .rung.now::after {
   content: 'você está aqui'; margin-left: auto;
   font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--content-inverse); background: var(--content);
+  color: #fff;
+  background: rgba(235, 225, 211, .12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3);
   padding: 4px 9px; border-radius: 99px;
 }
 
@@ -431,7 +476,7 @@ strong.hl { color: var(--content); font-weight: 800; }
   flex: none; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
   padding: 4px 9px; border-radius: 99px;
 }
-.pattern .grau.gA { background: #ee505a; color: #2b0206; box-shadow: 0 3px 12px rgba(238, 80, 90, .4); }
+.pattern .grau.gA { background: #d92d3a; color: #fff; box-shadow: 0 3px 12px rgba(238, 80, 90, .4); }
 .pattern .grau.gM { background: #e9a43f; color: #2c1a02; box-shadow: 0 3px 12px rgba(233, 164, 63, .38); }
 .pattern .grau.gB { background: #3aae92; color: #04231b; box-shadow: 0 3px 12px rgba(58, 174, 146, .35); }
 .pattern .ds { font-size: 14px; line-height: 1.4; color: var(--content-2); margin: 7px 0 13px; }
@@ -445,6 +490,70 @@ strong.hl { color: var(--content); font-weight: 800; }
   margin: 10px 0 0; font-size: 10.5px; font-weight: 700;
   letter-spacing: .06em; text-transform: uppercase; color: var(--content-3);
 }
+/* card do presente: roxo com dourado */
+.prize {
+  position: relative;
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; margin: 22px 0 0; padding: 18px 16px;
+  text-align: left; cursor: pointer;
+  border: 0; border-radius: 22px;
+  background:
+    radial-gradient(120% 140% at 8% 0%, #6b34c9 0%, #4a1f96 42%, #2c1160 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(240, 196, 106, .55),
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    0 14px 34px rgba(74, 31, 150, .45);
+  overflow: hidden;
+  isolation: isolate;
+  animation: prizeBreath 3.4s ease-in-out infinite;
+}
+.prize:active { transform: scale(.99); }
+
+/* faixa dourada que atravessa devagar */
+.prize-shine {
+  position: absolute; inset: -60% -30%;
+  background: linear-gradient(100deg,
+    transparent 38%, rgba(240, 196, 106, .16) 46%,
+    rgba(255, 236, 190, .5) 50%, rgba(240, 196, 106, .16) 54%, transparent 62%);
+  transform: translateX(-120%);
+  animation: prizeShine 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.prize-ico {
+  flex: none; width: 46px; height: 46px; border-radius: 15px;
+  display: grid; place-items: center;
+  color: #f0c46a;
+  background: rgba(240, 196, 106, .14);
+  box-shadow: inset 0 0 0 1px rgba(240, 196, 106, .45);
+}
+.prize-ico svg { width: 25px; height: 25px; }
+.prize-txt { flex: 1; display: grid; gap: 3px; }
+.prize-txt b {
+  font-size: 16.5px; font-weight: 800; letter-spacing: -.015em;
+  background: linear-gradient(96deg, #ffe9b8, #f0c46a 55%, #ffd98a);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.prize-txt i { font-style: normal; font-size: 13px; color: rgba(255, 255, 255, .74); }
+.prize-go {
+  flex: none; width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: #2c1160; background: #f0c46a;
+  box-shadow: 0 4px 14px rgba(240, 196, 106, .45);
+}
+
+@keyframes prizeShine {
+  0%, 55% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes prizeBreath {
+  0%, 100% { box-shadow: inset 0 0 0 1.5px rgba(240, 196, 106, .5), inset 0 1px 0 rgba(255, 255, 255, .2), 0 14px 34px rgba(74, 31, 150, .4); }
+  50% { box-shadow: inset 0 0 0 1.5px rgba(240, 196, 106, .95), inset 0 1px 0 rgba(255, 255, 255, .28), 0 18px 44px rgba(120, 60, 220, .55); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prize, .prize-shine { animation: none; }
+}
+
 .diag .peers { margin: 22px 0 0; text-align: center; font-size: 13px; color: var(--content-3); }
 .diag .peers b { color: var(--content-2); font-weight: 800; }
 

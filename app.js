@@ -74,11 +74,31 @@
     return map;
   })();
 
-  // pareamentos fixos: passos que devem repetir a foto de outro
-  var ESPELHO = { rotina_futura: 'fe' };
-  Object.keys(ESPELHO).forEach(function (id) {
-    if (photoMap[ESPELHO[id]]) photoMap[id] = photoMap[ESPELHO[id]];
-  });
+  // fotos escolhidas a dedo para passos específicos, acima do sorteio
+  var FIXOS = {
+    rotina_futura: 'img/pm5.webp',
+    preferencia_caminho: 'img/pm3.webp',
+  };
+  Object.keys(FIXOS).forEach(function (id) { photoMap[id] = FIXOS[id]; });
+
+  // depois dos fixos, desfaz qualquer foto repetida em passos vizinhos
+  (function () {
+    var comHero = STEPS.filter(hasHero);
+    function trocar(id, proibidas) {
+      for (var k = 0; k < PHOTOS.length; k++) {
+        if (proibidas.indexOf(PHOTOS[k]) < 0) { photoMap[id] = PHOTOS[k]; return; }
+      }
+    }
+    for (var i = 1; i < comHero.length; i++) {
+      var id = comHero[i].id, idAnt = comHero[i - 1].id;
+      if (photoMap[id] !== photoMap[idAnt]) continue;
+      var prox = comHero[i + 1] ? photoMap[comHero[i + 1].id] : null;
+      var antAnt = comHero[i - 2] ? photoMap[comHero[i - 2].id] : null;
+      // o passo com foto escolhida a dedo manda; quem cede é o vizinho
+      if (FIXOS[id]) trocar(idAnt, [photoMap[id], antAnt]);
+      else trocar(id, [photoMap[idAnt], prox]);
+    }
+  })();
 
   function photoOf(id) { return photoMap[id]; }
 
@@ -93,11 +113,15 @@
     return function (id) { return map[id]; };
   })();
 
-  function sectionProgress(step) {
-    var sec = sectionOf(step.id);
-    var inSec = STEPS.filter(function (s) { return sectionOf(s.id) === sec; });
-    var pos = inSec.indexOf(step);
-    return { section: sec, pct: ((pos + 1) / inSec.length) * 100 };
+  // o diagnóstico é a linha de chegada da barra: lá ela precisa estar cheia
+  var IDX_DIAGNOSTICO = (function () {
+    for (var i = 0; i < STEPS.length; i++) if (STEPS[i].type === 'diagnosis') return i;
+    return STEPS.length - 1;
+  })();
+
+  function progressoGlobal(step) {
+    var i = STEPS.indexOf(step);
+    return Math.max(0, Math.min(1, (i + 1) / (IDX_DIAGNOSTICO + 1)));
   }
 
   /* ---------- helpers ---------- */
@@ -213,14 +237,12 @@
   function header(step) {
     topbar.hidden = false;
     back.hidden = false;
-    var isQuestion = step.type === 'single' || step.type === 'multi' || step.type === 'scale';
-    if (!isQuestion) { headCenter.replaceChildren(el(LOGO)); return; }
-
-    var pr = sectionProgress(step);
+    var g = progressoGlobal(step);
+    var n = SECTIONS.length;
     var segs = SECTIONS.map(function (_, i) {
-      var w = i < pr.section ? 100 : (i === pr.section ? pr.pct : 0);
+      var w = Math.max(0, Math.min(1, g * n - i)) * 100;
       return '<i><b style="width:' + w + '%"></b></i>';
-    }).join('') + '<em class="gift roxo' + (pr.section === SECTIONS.length - 1 ? ' won' : '') + '">' + GIFT + '</em>';
+    }).join('') + '<em class="gift roxo' + (g >= 1 ? ' won' : '') + '">' + GIFT + '</em>';
 
     headCenter.replaceChildren(el(
       '<div>' + LOGO + '<div class="segments">' + segs + '</div></div>'
@@ -461,7 +483,17 @@
           '<path class="fill ' + tone + '" d="M18 110 A92 92 0 0 1 202 110" fill="none" stroke-width="13" stroke-linecap="round"' +
             ' stroke-dasharray="' + ARC + '" stroke-dashoffset="' + ARC + '"/>' +
         '</svg>' +
-        '<div class="dial-mid"><b>0<i>%</i></b><span>do padrão ativo</span></div>' +
+        '<div class="dial-mid"><b><span class="n">0</span><i>%</i></b><span>do padrão ativo</span></div>' +
+      '</div>' +
+      '<div class="player">' +
+        '<button class="play" type="button" aria-label="Ouvir a leitura do seu resultado">' +
+          '<svg class="ico-play" viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M8 5.2v13.6c0 .9 1 1.4 1.7.9l10-6.8a1.1 1.1 0 000-1.8l-10-6.8A1.1 1.1 0 008 5.2z"/></svg>' +
+          '<svg class="ico-pause" viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><rect x="6.5" y="4.5" width="4" height="15" rx="1.4"/><rect x="13.5" y="4.5" width="4" height="15" rx="1.4"/></svg>' +
+        '</button>' +
+        '<div class="player-body">' +
+          '<div class="wave">' + ondas(46) + '</div>' +
+          '<div class="times"><span class="t-now">0:00</span><span class="t-total">0:15</span></div>' +
+        '</div>' +
       '</div>' +
       '<h1 class="' + tone + '">' + esc(lv.name) + '</h1>' +
       '<p class="range">' + esc(lv.range) + '</p>' +
@@ -469,30 +501,107 @@
       '<div class="ladder">' + steps + '</div>' +
       '<p class="sect">Padrões ativos na sua linhagem</p>' +
       '<div class="patterns">' + patterns + '</div>' +
+      '<button class="prize" type="button">' +
+        '<span class="prize-shine"></span>' +
+        '<span class="prize-ico">' + GIFT + '</span>' +
+        '<span class="prize-txt">' +
+          '<b>Seu presente está liberado</b>' +
+          '<i>O plano para quebrar os 4 padrões, sem custo</i>' +
+        '</span>' +
+        '<span class="prize-go">' + ARROW + '</span>' +
+      '</button>' +
       '<p class="peers">Comparado com <b>5.841</b> pessoas que já mapearam seus ciclos.</p>' +
     '</div>');
 
+    v.querySelector('.prize').addEventListener('click', redirectToast);
+    montarPlayer(v, 15); // trocar pela duração real quando o áudio entrar
+
     var cta = setCta('Analisando...', redirectToast, true);
     var fill = v.querySelector('.fill');
-    var num = v.querySelector('.dial-mid b');
-    var t0 = Date.now(), dur = 1800, mine = state.index;
+    var num = v.querySelector('.dial-mid .n');
+    var mine = state.index, dur = 1600, t0 = null, ultimo = -1;
 
-    var timer = setInterval(function () {
-      if (state.index !== mine) { clearInterval(timer); return; }
-      var p = Math.min(1, (Date.now() - t0) / dur);
+    // um quadro por frame do navegador, sem transição CSS competindo com o script
+    function frame(ts) {
+      if (state.index !== mine) return;
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
       var eased = 1 - Math.pow(1 - p, 3);
-      fill.setAttribute('stroke-dashoffset', String(ARC * (1 - eased * r.pct / 100)));
-      num.innerHTML = Math.round(eased * r.pct) + '<i>%</i>';
-      if (p >= 1) {
-        clearInterval(timer);
-        v.querySelectorAll('.meter b').forEach(function (bar, i) {
-          setTimeout(function () { bar.style.width = bar.dataset.w + '%'; }, i * 110);
-        });
-        cta.disabled = false;
-        cta.textContent = 'Ver como quebrar';
-      }
-    }, 30);
+      fill.style.strokeDashoffset = ARC * (1 - eased * r.pct / 100);
+      var n = Math.round(eased * r.pct);
+      if (n !== ultimo) { num.textContent = n; ultimo = n; }
+      if (p < 1) { requestAnimationFrame(frame); return; }
+      v.querySelectorAll('.meter b').forEach(function (bar, i) {
+        setTimeout(function () { bar.style.width = bar.dataset.w + '%'; }, i * 110);
+      });
+      cta.disabled = false;
+      cta.textContent = 'Ver como quebrar';
+    }
+    requestAnimationFrame(frame);
     return v;
+  }
+
+  // barras da onda: alturas fixas, para o desenho não mudar a cada render
+  function ondas(n) {
+    var out = '';
+    for (var i = 0; i < n; i++) {
+      var h = 22 + Math.round(Math.abs(Math.sin(i * 1.7) * 0.6 + Math.sin(i * 0.53) * 0.4) * 78);
+      out += '<i style="height:' + h + '%"></i>';
+    }
+    return out;
+  }
+
+  // player sem áudio ainda: a faixa corre no relógio, pronta para receber o arquivo
+  function montarPlayer(root, total) {
+    var wrap = root.querySelector('.player');
+    var btn = wrap.querySelector('.play');
+    var bars = wrap.querySelectorAll('.wave i');
+    var tNow = wrap.querySelector('.t-now');
+    var tocando = false, pos = 0, ultimo = 0, raf = null;
+    var mine = state.index;
+
+    function mmss(s) {
+      var m = Math.floor(s / 60), r = Math.floor(s % 60);
+      return m + ':' + (r < 10 ? '0' : '') + r;
+    }
+    function pintar() {
+      var lidas = Math.round(pos / total * bars.length);
+      for (var i = 0; i < bars.length; i++) bars[i].classList.toggle('on', i < lidas);
+      tNow.textContent = mmss(pos);
+      wrap.style.setProperty('--pos', (pos / total * 100) + '%');
+    }
+    function passo(ts) {
+      if (state.index !== mine || !tocando) return;
+      if (!ultimo) ultimo = ts;
+      pos = Math.min(total, pos + (ts - ultimo) / 1000);
+      ultimo = ts;
+      pintar();
+      if (pos >= total) { parar(); pos = 0; pintar(); return; }
+      raf = requestAnimationFrame(passo);
+    }
+    function parar() {
+      tocando = false; ultimo = 0;
+      if (raf) cancelAnimationFrame(raf);
+      wrap.classList.remove('tocando');
+      btn.setAttribute('aria-label', 'Ouvir a leitura do seu resultado');
+    }
+
+    btn.addEventListener('click', function () {
+      if (tocando) { parar(); return; }
+      tocando = true;
+      wrap.classList.add('tocando');
+      btn.setAttribute('aria-label', 'Pausar');
+      raf = requestAnimationFrame(passo);
+    });
+
+    // clicar na onda salta para o ponto
+    wrap.querySelector('.wave').addEventListener('click', function (e) {
+      var r = this.getBoundingClientRect();
+      pos = Math.max(0, Math.min(total, (e.clientX - r.left) / r.width * total));
+      pintar();
+    });
+
+    pintar();
   }
 
   function toneClass(t) {
@@ -519,6 +628,10 @@
     var t = el('<div class="toast" role="status" aria-live="polite">' +
       '<span class="spin"></span><span>Redirecionando você para a página</span></div>');
     ctabar.appendChild(t); // depois do wrapper, que setCta reaproveita
+    setTimeout(function () {
+      t.classList.add('saindo');
+      setTimeout(function () { t.remove(); }, 260);
+    }, 2000);
   }
 
   /* ---------- comparativo ---------- */

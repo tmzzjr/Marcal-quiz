@@ -37,7 +37,7 @@ window.QUIZ_STEPS = [
     { value: '3', label: '😩 Endividado(a), no vermelho' },
     { value: '2', label: '😐 Fecho o mês, mas nunca sobra' },
     { value: '1', label: '🙂 Consigo guardar um pouco' },
-    { value: '0', label: '💪 Tenho estabilidade, mas quero muito mais' },
+    { value: '0', label: '💪 Estou tranquilo(a) com dinheiro, mas quero muito mais' },
   ]},
   { id: 'frequencia_dor', type: 'single', question: 'Com que frequência você tem a sensação de "de novo isso, sempre a mesma coisa"?', options: [
     { value: '3', label: '🔴 Quase todos os dias' },
