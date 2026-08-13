@@ -9,6 +9,14 @@
   var SECTIONS = window.QUIZ_SECTIONS;
 
   var PHOTOS = ['img/pm1.webp', 'img/pm6.webp', 'img/pm3.webp', 'img/pm4.webp', 'img/pm5.webp', 'img/pm2.webp'];
+  var FULL_BODY = ['img/pm6.webp']; // corpo inteiro pede mais altura pra figura não ficar pequena
+
+  // pré-carrega tudo no início: trocar de step não pode esperar imagem
+  ['img/homem-cut.webp', 'img/mulher-cut.webp'].concat(PHOTOS).forEach(function (src) {
+    var i = new Image();
+    i.decoding = 'async';
+    i.src = src;
+  });
 
   var state = { index: -1, answers: {}, sent: false };
 
@@ -71,6 +79,13 @@
   var DOT = '<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#ebe1d3"/></svg>';
   var ARROW = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
 
+  var GIFT = '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">' +
+    '<rect x="3" y="9.5" width="18" height="11.5" rx="2" fill="currentColor"/>' +
+    '<rect x="2" y="6.5" width="20" height="4.5" rx="1.4" fill="currentColor"/>' +
+    '<rect x="10.4" y="6.5" width="3.2" height="14.5" fill="rgba(5,3,0,.42)"/>' +
+    '<path d="M12 6.5C10.6 6.5 8 6.2 8 4.4 8 3.3 8.9 2.5 10 2.5c1.6 0 2 2.3 2 4zm0 0c1.4 0 4-.3 4-2.1 0-1.1-.9-1.9-2-1.9-1.6 0-2 2.3-2 4z" fill="currentColor"/>' +
+    '</svg>';
+
   /* ---------- pontuação ---------- */
   function scoreOf() {
     var total = 0;
@@ -88,7 +103,43 @@
     if (total >= 27) level = 4;
     else if (total >= 20) level = 3;
     else if (total >= 12) level = 2;
-    return { score: total, level: level };
+    return { score: total, level: level, max: maxScore(), pct: Math.round(total / maxScore() * 100) };
+  }
+
+  // teto real do questionário, para o índice não ser um número solto
+  function maxScore() {
+    var max = 0;
+    STEPS.forEach(function (s) {
+      if (s.type === 'scale') { max += 4; return; }
+      if (s.type !== 'single') return;
+      var best = 0;
+      (s.options || []).forEach(function (o) {
+        var v = o.score != null ? o.score : parseInt(o.value, 10);
+        if (!isNaN(v) && v > best) best = v;
+      });
+      max += best;
+    });
+    return max || 1;
+  }
+
+  // intensidade de cada padrão, lida das respostas que o alimentam
+  function patternIntensity() {
+    var a = state.answers;
+    function has(id, val) { return a[id] === val; }
+    function inMulti(id, val) { return (a[id] || []).indexOf(val) >= 0; }
+    function scale(id) { return a[id] != null ? Number(a[id]) / 4 : 0; }
+    function clamp(n) { return Math.max(18, Math.min(100, Math.round(n))); }
+
+    var frases = (a.frases_herdadas || []).filter(function (v) { return v !== 'nenhuma'; }).length;
+
+    return [
+      clamp(30 + scale('escala_destino') * 40 + (Number(a.financeiro) || 0) * 5 + frases * 4),
+      clamp(28 + scale('escala_culpa') * 45 + (has('crenca_prosperar', 'culpado') ? 15 : 0) + (has('fe', 'muito') ? 8 : 0)),
+      clamp(25 + (has('nao_dito_traicao', 'exato') ? 40 : has('nao_dito_traicao', 'um_pouco') ? 25 : has('nao_dito_traicao', 'faz_sentido') ? 15 : 0) +
+        (has('julgamento_social', 'todos') ? 22 : has('julgamento_social', 'familia') ? 16 : 0) + (inMulti('origem_limites', 'casa') ? 8 : 0)),
+      clamp(24 + (Number(a.autossabotagem) || 0) * 12 + (has('padrao_travada', 'eu_travo') ? 18 : 12) +
+        (has('recaidas', 'muitas') ? 20 : has('recaidas', '3_4') ? 12 : 0)),
+    ];
   }
 
   /* ---------- navegação ---------- */
@@ -121,10 +172,12 @@
     if (!isQuestion) { headCenter.replaceChildren(el(LOGO)); return; }
 
     var pr = sectionProgress(step);
+    var mid = Math.floor(SECTIONS.length / 2);
     var segs = SECTIONS.map(function (_, i) {
       var w = i < pr.section ? 100 : (i === pr.section ? pr.pct : 0);
-      return '<i><b style="width:' + w + '%"></b></i>';
-    }).join('');
+      var gift = i === mid ? '<em class="gift amarelo' + (pr.section > mid ? ' won' : '') + '">' + GIFT + '</em>' : '';
+      return '<i><b style="width:' + w + '%"></b></i>' + gift;
+    }).join('') + '<em class="gift roxo' + (pr.section === SECTIONS.length - 1 ? ' won' : '') + '">' + GIFT + '</em>';
     headCenter.replaceChildren(el(
       '<div>' + LOGO + '<div class="segments">' + segs + '</div></div>'
     ));
@@ -158,8 +211,9 @@
   function figure(step, tall) {
     var src = photoOf(step.id);
     if (!src) return '';
-    return '<div class="figure' + (tall ? ' tall' : '') + '">' +
-      '<img src="' + src + '" alt="Pablo Marçal" loading="lazy"></div>';
+    var cls = 'figure' + (tall ? ' tall' : '') + (FULL_BODY.indexOf(src) >= 0 ? ' full' : '');
+    return '<div class="' + cls + '">' +
+      '<img src="' + src + '" alt="Pablo Marçal" decoding="sync" fetchpriority="high"></div>';
   }
 
   /* ---------- intro ---------- */
@@ -329,30 +383,67 @@
   function viewDiagnosis() {
     var r = scoreOf();
     var lv = LEVELS[r.level];
+    var tone = toneClass(lv.tone);
     var marks = ['Preso Profundo', 'Ciclo Ativo', 'Rompendo', 'Quase Livre'];
-    var patterns = PATTERNS.map(function (p) {
-      return '<div class="pattern"><p class="tag">' + esc(p.tag) + '</p>' +
-        '<p class="nm">' + esc(p.name) + '</p><p class="ds">' + esc(p.desc) + '</p></div>';
+    var pos = 4 - r.level; // 0 = mais preso
+    var intens = patternIntensity();
+
+    var steps = marks.map(function (m, i) {
+      var cls = i < pos ? ' done' : (i === pos ? ' now' : '');
+      return '<div class="rung' + cls + '"><i></i><span>' + m + '</span></div>';
     }).join('');
 
+    var patterns = PATTERNS.map(function (p, i) {
+      var n = intens[i];
+      var grau = n >= 70 ? 'Alta' : n >= 45 ? 'Média' : 'Baixa';
+      return '<article class="pattern">' +
+        '<header><h3>' + esc(p.name) + '</h3><span class="grau g' + grau.charAt(0) + '">' + grau + '</span></header>' +
+        '<p class="ds">' + esc(p.desc) + '</p>' +
+        '<div class="meter"><b data-w="' + n + '"></b></div>' +
+        '<p class="tag">' + esc(p.tag) + '</p></article>';
+    }).join('');
+
+    // arco semicircular: raio 92, meia volta
+    var R = 92, ARC = Math.PI * R;
+
     var v = el('<div class="diag">' +
-      '<p class="kicker">Seu Índice de Ruptura de Ciclos</p>' +
-      '<h1>Nível <span class="' + toneClass(lv.tone) + '">' + esc(lv.name) + '</span></h1>' +
-      '<p class="rule">Preso Profundo → Ciclo Ativo → Rompendo → Quase Livre</p>' +
-      '<div class="marker-track"><div class="marker" style="left:0%"><span>Você</span><i></i></div></div>' +
-      '<div class="gauge"><i></i><i></i><i></i><i></i></div>' +
-      '<div class="gauge-labels">' + marks.map(function (m) { return '<span>' + m + '</span>'; }).join('') + '</div>' +
+      '<p class="kicker">Seu Índice de Ruptura</p>' +
+      '<div class="dial">' +
+        '<svg viewBox="0 0 220 128" width="100%">' +
+          '<path class="track" d="M18 110 A92 92 0 0 1 202 110" fill="none" stroke-width="13" stroke-linecap="round"/>' +
+          '<path class="fill ' + tone + '" d="M18 110 A92 92 0 0 1 202 110" fill="none" stroke-width="13" stroke-linecap="round"' +
+            ' stroke-dasharray="' + ARC + '" stroke-dashoffset="' + ARC + '"/>' +
+        '</svg>' +
+        '<div class="dial-mid"><b>0<i>%</i></b><span>do padrão ativo</span></div>' +
+      '</div>' +
+      '<h1 class="' + tone + '">' + esc(lv.name) + '</h1>' +
+      '<p class="range">' + esc(lv.range) + '</p>' +
       '<p class="summary">' + esc(lv.summary) + '</p>' +
-      '<p class="sect">Padrão invisível identificado na sua linhagem</p>' + patterns + '</div>');
+      '<div class="ladder">' + steps + '</div>' +
+      '<p class="sect">Padrões ativos na sua linhagem</p>' +
+      '<div class="patterns">' + patterns + '</div>' +
+      '<p class="peers">Comparado com <b>5.841</b> pessoas que já mapearam seus ciclos.</p>' +
+    '</div>');
 
     var cta = setCta('Analisando...', next, true);
-    var marker = v.querySelector('.marker');
-    var t0 = Date.now(), dur = 2200, mine = state.index;
+    var fill = v.querySelector('.fill');
+    var num = v.querySelector('.dial-mid b');
+    var t0 = Date.now(), dur = 1800, mine = state.index;
+
     var timer = setInterval(function () {
       if (state.index !== mine) { clearInterval(timer); return; }
       var p = Math.min(1, (Date.now() - t0) / dur);
-      marker.style.left = ((1 - Math.pow(1 - p, 3)) * lv.bar) + '%';
-      if (p >= 1) { clearInterval(timer); cta.disabled = false; cta.textContent = 'Continuar'; }
+      var eased = 1 - Math.pow(1 - p, 3);
+      fill.setAttribute('stroke-dashoffset', String(ARC * (1 - eased * r.pct / 100)));
+      num.innerHTML = Math.round(eased * r.pct) + '<i>%</i>';
+      if (p >= 1) {
+        clearInterval(timer);
+        v.querySelectorAll('.meter b').forEach(function (bar, i) {
+          setTimeout(function () { bar.style.width = bar.dataset.w + '%'; }, i * 110);
+        });
+        cta.disabled = false;
+        cta.textContent = 'Ver como quebrar';
+      }
     }, 30);
     return v;
   }
