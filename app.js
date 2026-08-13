@@ -20,6 +20,36 @@
 
   var state = { index: -1, answers: {}, sent: false };
 
+  /* ---------- progresso salvo ---------- */
+  var STORE_KEY = 'quebrando_ciclos_v1';
+  var MAX_IDADE = 1000 * 60 * 60 * 24 * 14; // 14 dias
+
+  function loadSaved() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      var s = JSON.parse(raw);
+      if (!s || s.v !== 1) return null;
+      if (!s.t || Date.now() - s.t > MAX_IDADE) { localStorage.removeItem(STORE_KEY); return null; }
+      return s;
+    } catch (e) { return null; }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        v: 1,
+        t: Date.now(),
+        index: state.index,
+        answers: state.answers,
+        sent: state.sent,
+        photos: photoMap,
+      }));
+    } catch (e) { /* modo anônimo ou cota cheia: seguir sem salvar */ }
+  }
+
+  var saved = loadSaved();
+
   var app = document.getElementById('app');
   var back = document.getElementById('back');
   var topbar = document.getElementById('topbar');
@@ -30,7 +60,9 @@
   function hasHero(s) {
     return s.type === 'single' || s.type === 'multi' || s.type === 'scale' || s.type === 'content';
   }
-  var photoOf = (function () {
+  var photoMap = (function () {
+    // reaproveita o sorteio salvo, senão as fotos trocariam a cada recarga
+    if (saved && saved.photos && Object.keys(saved.photos).length) return saved.photos;
     var map = {}, used = 0, last = null;
     STEPS.forEach(function (s) {
       if (!hasHero(s)) return;
@@ -39,8 +71,10 @@
       else do { pick = PHOTOS[Math.floor(Math.random() * PHOTOS.length)]; } while (pick === last);
       used++; last = pick; map[s.id] = pick;
     });
-    return function (id) { return map[id]; };
+    return map;
   })();
+
+  function photoOf(id) { return photoMap[id]; }
 
   /* ---------- seções ---------- */
   var sectionOf = (function () {
@@ -145,12 +179,13 @@
   /* ---------- navegação ---------- */
   function go(i) {
     state.index = Math.max(-1, Math.min(i, STEPS.length - 1));
+    save();
     render();
     window.scrollTo(0, 0);
   }
   function next() { go(state.index + 1); }
   function prev() { go(state.index - 1); }
-  function answer(id, value) { state.answers[id] = value; }
+  function answer(id, value) { state.answers[id] = value; save(); }
 
   function setCta(label, onClick, disabled) {
     if (!label) { ctabar.hidden = true; app.classList.remove('has-cta'); return; }
@@ -531,6 +566,54 @@
       '<p>Em instantes você vai receber o retrato completo do seu Índice de Ruptura e o próximo passo pra quebrar cada ciclo.</p></div>'));
   }
 
+  /* ---------- retomar de onde parou ---------- */
+  function askResume(s) {
+    var step = STEPS[s.index];
+    var qSteps = STEPS.filter(function (x) {
+      return x.type === 'single' || x.type === 'multi' || x.type === 'scale';
+    });
+    var doneQ = qSteps.filter(function (x, i) { return i <= qSteps.indexOf(step); }).length;
+    var pct = Math.max(5, Math.round((s.index + 1) / STEPS.length * 100));
+
+    var m = el('<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">' +
+      '<div class="modal-card">' +
+        '<div class="modal-ring">' +
+          '<svg viewBox="0 0 84 84" width="84" height="84">' +
+            '<circle cx="42" cy="42" r="37" fill="none" stroke="rgba(235,225,211,.14)" stroke-width="7"/>' +
+            '<circle cx="42" cy="42" r="37" fill="none" stroke="#3aae92" stroke-width="7" stroke-linecap="round"' +
+              ' transform="rotate(-90 42 42)" stroke-dasharray="' + (2 * Math.PI * 37) + '"' +
+              ' stroke-dashoffset="' + (2 * Math.PI * 37 * (1 - pct / 100)) + '"/>' +
+          '</svg>' +
+          '<b>' + pct + '<i>%</i></b>' +
+        '</div>' +
+        '<h2 id="mt">Você já começou</h2>' +
+        '<p>Seu progresso está salvo' + (doneQ > 0 ? ', são <b>' + doneQ + '</b> respostas guardadas' : '') +
+          '. Quer continuar de onde parou?</p>' +
+        '<button class="btn" data-go="continuar">Continuar de onde parei</button>' +
+        '<button class="linkbtn" data-go="reiniciar">Começar de novo</button>' +
+      '</div></div>');
+
+    m.querySelector('[data-go="continuar"]').addEventListener('click', function () {
+      state.answers = s.answers || {};
+      state.sent = !!s.sent;
+      m.remove();
+      document.body.classList.remove('blurred');
+      go(s.index);
+    });
+    m.querySelector('[data-go="reiniciar"]').addEventListener('click', function () {
+      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      state.answers = {};
+      state.sent = false;
+      m.remove();
+      document.body.classList.remove('blurred');
+      go(-1);
+    });
+
+    document.body.appendChild(m);
+    document.body.classList.add('blurred');
+  }
+
   back.addEventListener('click', prev);
   renderIntro();
+  if (saved && (saved.index >= 0 || saved.sent)) askResume(saved);
 })();
