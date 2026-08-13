@@ -74,6 +74,12 @@
     return map;
   })();
 
+  // pareamentos fixos: passos que devem repetir a foto de outro
+  var ESPELHO = { rotina_futura: 'fe' };
+  Object.keys(ESPELHO).forEach(function (id) {
+    if (photoMap[ESPELHO[id]]) photoMap[id] = photoMap[ESPELHO[id]];
+  });
+
   function photoOf(id) { return photoMap[id]; }
 
   /* ---------- seções ---------- */
