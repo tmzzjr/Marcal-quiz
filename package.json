@@ -1,0 +1,12 @@
+{
+  "name": "quiz-quebrando-ciclos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Quiz Quebrando Ciclos",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

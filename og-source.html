@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>OG source</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: #050300; font-family: Figtree, sans-serif; }
+  .card { position: relative; width: 1200px; height: 630px; display: flex; align-items: center; }
+  .glow {
+    position: absolute; right: -60px; top: -80px; width: 900px; height: 800px;
+    background: radial-gradient(46% 46% at 50% 50%, rgba(225,134,59,.30) 0%, rgba(225,134,59,0) 70%);
+  }
+  .copy { position: relative; padding: 0 0 0 72px; width: 690px; }
+  .mark {
+    color: #fff; font-size: 20px; font-weight: 800; letter-spacing: .16em;
+    text-transform: uppercase; margin-bottom: 30px;
+  }
+  h1 {
+    color: #ebe1d3; font-size: 62px; line-height: 1.02; font-weight: 900;
+    letter-spacing: -.025em; text-transform: uppercase;
+  }
+  p { color: rgba(235,225,211,.72); font-size: 25px; line-height: 1.32; margin-top: 26px; }
+  p b { color: #ebe1d3; font-weight: 800; }
+  .cta {
+    display: inline-block; margin-top: 36px; background: #ebe1d3; color: #050300;
+    font-size: 19px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 17px 40px; border-radius: 999px;
+  }
+  .shot { position: absolute; right: 40px; bottom: 0; height: 620px; }
+  .shot img {
+    height: 100%; width: auto; display: block;
+    -webkit-mask-image:
+      linear-gradient(to bottom, #000 62%, rgba(0,0,0,.55) 86%, transparent 100%),
+      linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+    -webkit-mask-composite: source-in;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="glow"></div>
+    <div class="copy">
+      <div class="mark">Quebrando Ciclos</div>
+      <h1>Não é azar.<br>É um ciclo.</h1>
+      <p>Descubra em 2 minutos quais dos <b>7 ciclos</b> herdados estão te prendendo, e receba o plano pra quebrar cada um.</p>
+      <span class="cta">Fazer o teste</span>
+    </div>
+    <div class="shot"><img src="img/pm1.webp" alt=""></div>
+  </div>
+</body>
+</html>
