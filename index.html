@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quebrando Ciclos — Qual seu Índice de Ruptura?</title>
+<meta name="description" content="Descubra em minutos quais ciclos herdados estão te impedindo de prosperar, e receba seu plano personalizado para quebrá-los.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="preload" as="image" href="img/homem.webp">
+<link rel="preload" as="image" href="img/mulher.webp">
+</head>
+<body>
+
+<header class="topbar" id="topbar" hidden>
+  <div class="topbar-inner">
+    <button class="iconbtn" id="back" aria-label="Voltar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img class="topbar-logo" src="img/logo.webp" alt="Quebrando Ciclos">
+    <div class="stepcount" id="counter"></div>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+</header>
+
+<main id="app"></main>
+
+<script src="quiz-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
