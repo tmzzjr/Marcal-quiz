@@ -143,12 +143,18 @@
   var DOT = '<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#ebe1d3"/></svg>';
   var ARROW = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
 
-  var GIFT = '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">' +
-    '<rect x="3" y="9.5" width="18" height="11.5" rx="2" fill="currentColor"/>' +
-    '<rect x="2" y="6.5" width="20" height="4.5" rx="1.4" fill="currentColor"/>' +
-    '<rect x="10.4" y="6.5" width="3.2" height="14.5" fill="rgba(5,3,0,.42)"/>' +
-    '<path d="M12 6.5C10.6 6.5 8 6.2 8 4.4 8 3.3 8.9 2.5 10 2.5c1.6 0 2 2.3 2 4zm0 0c1.4 0 4-.3 4-2.1 0-1.1-.9-1.9-2-1.9-1.6 0-2 2.3-2 4z" fill="currentColor"/>' +
-    '</svg>';
+  // presente desenhado em traço, para não depender de emoji nem de cor fixa
+  function gift(size) {
+    var s = size || 17;
+    return '<svg viewBox="0 0 24 24" width="' + s + '" height="' + s + '" fill="none" aria-hidden="true">' +
+      '<path d="M4.4 11.6h15.2v7.2a2 2 0 0 1-2 2H6.4a2 2 0 0 1-2-2v-7.2Z" fill="currentColor"/>' +
+      '<rect x="2.9" y="7.4" width="18.2" height="4.4" rx="1.5" fill="currentColor"/>' +
+      '<rect x="10.35" y="7.4" width="3.3" height="13.4" rx=".5" fill="rgba(0,0,0,.34)"/>' +
+      '<path d="M11.9 7.2c-.5-2-1.5-3.5-2.8-4-1.2-.4-2.4.2-2.7 1.3-.3 1.1.4 2.2 1.7 2.6.9.3 2.2.4 3.8.1Z" fill="currentColor"/>' +
+      '<path d="M12.1 7.2c.5-2 1.5-3.5 2.8-4 1.2-.4 2.4.2 2.7 1.3.3 1.1-.4 2.2-1.7 2.6-.9.3-2.2.4-3.8.1Z" fill="currentColor"/>' +
+      '</svg>';
+  }
+  var GIFT = gift(17);
 
   /* ---------- pontuação ---------- */
   function scoreOf() {
@@ -503,14 +509,13 @@
       '<div class="patterns">' + patterns + '</div>' +
       '<button class="prize" type="button">' +
         '<span class="prize-shine"></span>' +
-        '<span class="prize-ico">' + GIFT + '</span>' +
+        '<span class="prize-ico">' + gift(26) + '</span>' +
         '<span class="prize-txt">' +
           '<b>Seu presente está liberado</b>' +
-          '<i>O plano para quebrar os 4 padrões, sem custo</i>' +
+          '<i>Livro E-book digital Antimedo</i>' +
         '</span>' +
         '<span class="prize-go">' + ARROW + '</span>' +
       '</button>' +
-      '<p class="peers">Comparado com <b>5.841</b> pessoas que já mapearam seus ciclos.</p>' +
     '</div>');
 
     v.querySelector('.prize').addEventListener('click', redirectToast);
@@ -535,7 +540,7 @@
         setTimeout(function () { bar.style.width = bar.dataset.w + '%'; }, i * 110);
       });
       cta.disabled = false;
-      cta.textContent = 'Ver como quebrar';
+      cta.textContent = 'Quebrar o ciclo';
     }
     requestAnimationFrame(frame);
     return v;
