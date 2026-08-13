@@ -8,8 +8,7 @@
   var COMPARISON = window.QUIZ_COMPARISON;
   var SECTIONS = window.QUIZ_SECTIONS;
 
-  // pm6 (corpo inteiro) abre o quiz: é o único recorte sem corte reto de enquadramento
-  var PHOTOS = ['img/pm6.webp', 'img/pm2.webp', 'img/pm3.webp', 'img/pm4.webp', 'img/pm5.webp', 'img/pm1.webp'];
+  var PHOTOS = ['img/pm1.webp', 'img/pm6.webp', 'img/pm3.webp', 'img/pm4.webp', 'img/pm5.webp', 'img/pm2.webp'];
 
   var state = { index: -1, answers: {}, sent: false };
 
@@ -127,8 +126,7 @@
       return '<i><b style="width:' + w + '%"></b></i>';
     }).join('');
     headCenter.replaceChildren(el(
-      '<div><p class="head-label">' + esc(SECTIONS[pr.section].label) + '</p>' +
-      '<div class="segments">' + segs + '</div></div>'
+      '<div>' + LOGO + '<div class="segments">' + segs + '</div></div>'
     ));
   }
 
