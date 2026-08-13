@@ -357,17 +357,34 @@ strong.hl { color: var(--content); font-weight: 800; }
   margin: 30px 0 14px; font-size: 11.5px; font-weight: 800;
   letter-spacing: .16em; text-transform: uppercase; color: var(--content-3);
 }
-.patterns { display: grid; gap: 10px; }
-.pattern { background: var(--answer-bg); border-radius: var(--answer-radius); padding: 17px 17px 15px; }
+.patterns { display: grid; gap: 12px; }
+.pattern {
+  position: relative;
+  border-radius: 20px;
+  padding: 18px 18px 16px;
+  background: linear-gradient(158deg, rgba(235, 225, 211, .07) 0%, rgba(235, 225, 211, .018) 46%, rgba(235, 225, 211, .045) 100%);
+  border: 1px solid rgba(235, 225, 211, .17);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 12px 30px rgba(0, 0, 0, .3);
+  overflow: hidden;
+}
+/* brilho de borda no topo, como vidro pegando luz */
+.pattern::before {
+  content: '';
+  position: absolute; top: -1px; left: 14%; right: 14%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, .5), transparent);
+  pointer-events: none;
+}
 .pattern header { display: flex; align-items: center; gap: 10px; }
 .pattern h3 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -.015em; flex: 1; }
 .pattern .grau {
   flex: none; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
   padding: 4px 9px; border-radius: 99px;
 }
-.pattern .grau.gA { background: rgba(238, 80, 90, .16); color: var(--negative); }
-.pattern .grau.gM { background: rgba(233, 164, 63, .16); color: var(--warning); }
-.pattern .grau.gB { background: rgba(58, 174, 146, .16); color: var(--positive); }
+.pattern .grau.gA { background: #ee505a; color: #2b0206; box-shadow: 0 3px 12px rgba(238, 80, 90, .4); }
+.pattern .grau.gM { background: #e9a43f; color: #2c1a02; box-shadow: 0 3px 12px rgba(233, 164, 63, .38); }
+.pattern .grau.gB { background: #3aae92; color: #04231b; box-shadow: 0 3px 12px rgba(58, 174, 146, .35); }
 .pattern .ds { font-size: 14px; line-height: 1.4; color: var(--content-2); margin: 7px 0 13px; }
 .meter { height: 5px; border-radius: 99px; background: rgba(235, 225, 211, .1); overflow: hidden; }
 .meter b {
